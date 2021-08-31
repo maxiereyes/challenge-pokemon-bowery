@@ -39,7 +39,7 @@ const Login = () => {
 		<div>
 			<Container>
 				<h1>Login</h1>
-				<form onSubmit={loginUser}>
+				<form onSubmit={loginUser} className="col-md-4 col">
 					<div className="mb-3">
 						<label htmlFor="exampleInputEmail1" className="form-label">
 							Email address

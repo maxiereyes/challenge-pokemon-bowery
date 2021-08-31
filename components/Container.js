@@ -7,7 +7,7 @@ const Container = ({ children }) => {
 			<Head>
 				<title>Challenge Pokemon</title>
 			</Head>
-			<div className="col mx-auto text-center">{children}</div>
+			<div className="row justify-content-center text-center">{children}</div>
 		</div>
 	)
 }

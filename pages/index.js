@@ -60,20 +60,22 @@ export default function Home({ pokemon, next, prev }) {
 	return (
 		<div>
 			<Container>
-				{!data.pokemon.length ? (
-					<Loading />
-				) : (
-					<div className="card">
-						{data.pokemon.map((item, index) => (
-							<CardItem
-								key={index}
-								name={item.name}
-								action={() => goItemDescription(item.url)}
-							/>
-						))}
-					</div>
-				)}
-				<Pagination next={data.next} prev={data.prev} action={getData} />
+				<div className="col-md-4">
+					{!data.pokemon.length ? (
+						<Loading />
+					) : (
+						<div className="list-group">
+							{data.pokemon.map((item, index) => (
+								<CardItem
+									key={index}
+									name={item.name}
+									action={() => goItemDescription(item.url)}
+								/>
+							))}
+						</div>
+					)}
+					<Pagination next={data.next} prev={data.prev} action={getData} />
+				</div>
 			</Container>
 		</div>
 	)

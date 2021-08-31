@@ -1,7 +1,7 @@
 const Pagination = ({ next, prev, action }) => {
 	return (
-		<nav aria-label="Page navigation example">
-			<ul className="pagination">
+		<nav className="mt-4">
+			<ul className="pagination justify-content-center">
 				<li
 					className={`page-item ${!prev ? 'disabled' : ''}`}
 					onClick={() => action(prev)}
