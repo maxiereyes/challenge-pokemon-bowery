@@ -1,19 +1,26 @@
 /* eslint-disable @next/next/no-img-element */
 import Container from '../components/Container'
 import ListMoves from '../components/ListMoves'
-import Link from 'next/link'
 import { getPokemonInfoById, getPokemonEvolution } from '../services/pokeapi'
 import iterateEvolution from '../helpers/evolution'
+import CardItem from '../components/CardItem'
+import { useRouter } from 'next/dist/client/router'
 
 const Description = ({ name, image, moves, evolves }) => {
+	const router = useRouter()
+
+	const goBack = () => {
+		router.back()
+	}
+
 	return (
 		<Container>
 			<div className="d-flex justify-content-between bg-light align-items-center mb-4">
 				<h1 className="text-uppercase">{name}</h1>
 				<div className="">
-					<Link href="/">
-						<a className="btn btn-outline-secondary">Volver</a>
-					</Link>
+					<a className="btn btn-outline-secondary" onClick={goBack}>
+						Volver
+					</a>
 				</div>
 			</div>
 
@@ -29,6 +36,16 @@ const Description = ({ name, image, moves, evolves }) => {
 			<div className="col-md-4 col-xs-1">
 				<ListMoves moves={moves} />
 			</div>
+			<div className="row mt-4 d-flex justify-content-evenly">
+				<h3 className="my-2 lead text-secondary border-bottom">Evolutions</h3>
+				{!evolves || evolves.length === 0 ? (
+					<h1>Not found evolutions</h1>
+				) : (
+					evolves.map((evolution, index) => (
+						<CardItem name={evolution.name} key={index} url={evolution.url} />
+					))
+				)}
+			</div>
 		</Container>
 	)
 }
@@ -38,15 +55,15 @@ Description.getInitialProps = async ({ query }) => {
 		const promisePokemon = getPokemonInfoById(query.id)
 		const promiseEvolutions = getPokemonEvolution(query.id)
 
-		const [resultPromisePokemon, resultPromiseEvolutions] = await Promise.all([
-			promisePokemon,
-			promiseEvolutions,
-		])
+		const [resultPromisePokemon, resultPromiseEvolutions] =
+			await Promise.allSettled([promisePokemon, promiseEvolutions])
 
-		const pokemon = resultPromisePokemon
-		const evolutions = resultPromiseEvolutions
+		const pokemon = resultPromisePokemon.value
+		const evolutions = resultPromiseEvolutions.value
 
-		const evolves = iterateEvolution(evolutions.chain.evolves_to)
+		const evolves = !evolutions
+			? []
+			: iterateEvolution(evolutions.chain.evolves_to)
 
 		return {
 			name: pokemon.name,

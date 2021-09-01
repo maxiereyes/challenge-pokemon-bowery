@@ -39,7 +39,7 @@ export default function Home() {
 		await getData(offset, limit)
 	}
 
-	const goItemDescription = (url) => {
+	/* const goItemDescription = (url) => {
 		const id = url.split('/')[6]
 		router.push({
 			pathname: '/description',
@@ -47,7 +47,7 @@ export default function Home() {
 				id,
 			},
 		})
-	}
+	} */
 
 	return (
 		<div>
@@ -57,11 +57,7 @@ export default function Home() {
 				) : (
 					<div className="d-flex flex-wrap justify-content-evenly">
 						{data.pokemon.map((item, index) => (
-							<CardItem
-								key={index}
-								name={item.name}
-								action={() => goItemDescription(item.url)}
-							/>
+							<CardItem key={index} name={item.name} url={item.url} />
 						))}
 					</div>
 				)}
