@@ -1,11 +1,15 @@
+import styles from './CardItem.module.css'
+
 const CardItem = (props) => {
 	return (
-		<li
-			className="list-group-item list-group-item-action"
+		<div
+			className={`card col-12 col-sm-4 col-md-2 m-2  shadow ${styles.custom_cursor}`}
 			onClick={props.action}
 		>
-			<h4 className="lead text-uppercase">{props.name}</h4>
-		</li>
+			<div className="card-body">
+				<h5 className="card-title lead text-uppercase">{props.name}</h5>
+			</div>
+		</div>
 	)
 }
 

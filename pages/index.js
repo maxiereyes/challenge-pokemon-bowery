@@ -1,12 +1,11 @@
 import CardItem from '../components/CardItem'
 import Container from '../components/Container'
-import axios from 'axios'
-import Loading from '../components/Loading'
 import Pagination from '../components/Pagination'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/dist/client/router'
+import { getAllPokemon } from '../services/pokeapi'
 
-export default function Home({ pokemon, next, prev }) {
+export default function Home() {
 	const router = useRouter()
 
 	const [data, setData] = useState({
@@ -15,15 +14,13 @@ export default function Home({ pokemon, next, prev }) {
 		prev: '',
 	})
 
-	const getInitialData = async () => {
+	const getData = async (offset, limit) => {
 		try {
-			const { data } = await axios.get(
-				'https://pokeapi.co/api/v2/pokemon?offset=0&limit=20'
-			)
+			const data = await getAllPokemon(offset, limit)
 			setData({
 				pokemon: data.results,
 				next: data.next,
-				prev: data.prev,
+				prev: data.previous,
 			})
 		} catch (error) {
 			console.log(error)
@@ -31,20 +28,15 @@ export default function Home({ pokemon, next, prev }) {
 	}
 
 	useEffect(() => {
-		getInitialData()
+		getData(0, 20)
 	}, [])
 
-	const getData = async (url) => {
-		try {
-			const { data } = await axios.get(url)
-			setData({
-				pokemon: data.results,
-				next: data.next,
-				prev: data.previous,
-			})
-		} catch (error) {
-			return { error }
-		}
+	const getOffsetAndLimit = async (url) => {
+		const queryParams = url.split('?')[1]
+		const params = new URLSearchParams(queryParams)
+		const offset = params.get('offset')
+		const limit = params.get('limit')
+		await getData(offset, limit)
 	}
 
 	const goItemDescription = (url) => {
@@ -60,22 +52,24 @@ export default function Home({ pokemon, next, prev }) {
 	return (
 		<div>
 			<Container>
-				<div className="col-md-4">
-					{!data.pokemon.length ? (
-						<Loading />
-					) : (
-						<div className="list-group">
-							{data.pokemon.map((item, index) => (
-								<CardItem
-									key={index}
-									name={item.name}
-									action={() => goItemDescription(item.url)}
-								/>
-							))}
-						</div>
-					)}
-					<Pagination next={data.next} prev={data.prev} action={getData} />
-				</div>
+				{!data.pokemon.length ? (
+					<h1>Not found data</h1>
+				) : (
+					<div className="d-flex flex-wrap justify-content-evenly">
+						{data.pokemon.map((item, index) => (
+							<CardItem
+								key={index}
+								name={item.name}
+								action={() => goItemDescription(item.url)}
+							/>
+						))}
+					</div>
+				)}
+				<Pagination
+					next={data.next}
+					prev={data.prev}
+					action={getOffsetAndLimit}
+				/>
 			</Container>
 		</div>
 	)

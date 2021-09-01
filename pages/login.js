@@ -1,7 +1,7 @@
 import { useRouter } from 'next/dist/client/router'
 import Container from '../components/Container'
-import axios from 'axios'
 import { useState } from 'react'
+import { postLogin } from '../services/user'
 
 const Login = () => {
 	const router = useRouter()
@@ -22,10 +22,7 @@ const Login = () => {
 	const loginUser = async (event) => {
 		event.preventDefault()
 		try {
-			const { data } = await axios.post(
-				'https://reqres.in/api/login',
-				dataLogin
-			)
+			await postLogin(dataLogin)
 
 			router.push({
 				pathname: '/',

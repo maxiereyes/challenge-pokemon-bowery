@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 import Container from '../components/Container'
-import axios from 'axios'
 import ListMoves from '../components/ListMoves'
 import Link from 'next/link'
+import { getPokemonInfoById, getPokemonEvolution } from '../services/pokeapi'
+import iterateEvolution from '../helpers/evolution'
 
-const Description = ({ name, image, moves }) => {
+const Description = ({ name, image, moves, evolves }) => {
 	return (
 		<Container>
 			<div className="d-flex justify-content-between bg-light align-items-center mb-4">
@@ -34,27 +35,24 @@ const Description = ({ name, image, moves }) => {
 
 Description.getInitialProps = async ({ query }) => {
 	try {
-		const promisePokemon = axios.get(
-			`https://pokeapi.co/api/v2/pokemon/${query.id}`
-		)
-
-		const promiseEvolutions = axios.get(
-			`https://pokeapi.co/api/v2/evolution-chain/${query.id}/`
-		)
+		const promisePokemon = getPokemonInfoById(query.id)
+		const promiseEvolutions = getPokemonEvolution(query.id)
 
 		const [resultPromisePokemon, resultPromiseEvolutions] = await Promise.all([
 			promisePokemon,
 			promiseEvolutions,
 		])
 
-		const { data: pokemon } = resultPromisePokemon
-		const { data: evolutions } = resultPromiseEvolutions
+		const pokemon = resultPromisePokemon
+		const evolutions = resultPromiseEvolutions
+
+		const evolves = iterateEvolution(evolutions.chain.evolves_to)
 
 		return {
 			name: pokemon.name,
 			image: pokemon.sprites.front_default,
 			moves: pokemon.moves,
-			evolutions,
+			evolves,
 		}
 	} catch (error) {
 		return { error }
