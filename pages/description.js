@@ -5,12 +5,26 @@ import { getPokemonInfoById, getPokemonEvolution } from '../services/pokeapi'
 import iterateEvolution from '../helpers/evolution'
 import CardItem from '../components/CardItem'
 import { useRouter } from 'next/dist/client/router'
+import { useEffect } from 'react'
+import CustomError from '../components/Error'
 
-const Description = ({ name, image, moves, evolves }) => {
+const Description = ({ name, image, moves, evolves, error = '' }) => {
 	const router = useRouter()
 
 	const goBack = () => {
 		router.back()
+	}
+
+	useEffect(() => {
+		if (localStorage.getItem('token') === '') {
+			router.push({
+				pathname: '/login',
+			})
+		}
+	}, [])
+
+	if (error) {
+		return <CustomError message={error.message} />
 	}
 
 	return (

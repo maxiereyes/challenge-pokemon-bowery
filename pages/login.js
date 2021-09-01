@@ -2,6 +2,7 @@ import { useRouter } from 'next/dist/client/router'
 import Container from '../components/Container'
 import { useState } from 'react'
 import { postLogin } from '../services/user'
+import CustomError from '../components/Error'
 
 const Login = () => {
 	const router = useRouter()
@@ -10,6 +11,8 @@ const Login = () => {
 		email: '',
 		password: '',
 	})
+
+	const [error, setError] = useState('')
 
 	const handleChange = ({ target: { name, value } }) => {
 		setDataLogin((prev) => ({
@@ -21,14 +24,20 @@ const Login = () => {
 	const loginUser = async (event) => {
 		event.preventDefault()
 		try {
-			await postLogin(dataLogin)
+			const { data } = await postLogin(dataLogin)
+
+			localStorage.setItem('token', data.token)
 
 			router.push({
 				pathname: '/',
 			})
 		} catch (error) {
-			return { error }
+			setError(error.message)
 		}
+	}
+
+	if (error) {
+		return <CustomError message={error} />
 	}
 
 	return (

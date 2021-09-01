@@ -1,3 +1,4 @@
+import { useRouter } from 'next/dist/client/router'
 import { useState, useEffect } from 'react'
 import CardItem from '../components/CardItem'
 import Container from '../components/Container'
@@ -6,6 +7,8 @@ import Pagination from '../components/Pagination'
 import { getAllPokemon, getPokemonName } from '../services/pokeapi'
 
 export default function Home() {
+	const router = useRouter()
+
 	const [data, setData] = useState({
 		pokemon: [],
 		next: '',
@@ -71,6 +74,11 @@ export default function Home() {
 	}
 
 	useEffect(() => {
+		if (localStorage.getItem('token') === '') {
+			router.push({
+				pathname: '/login',
+			})
+		}
 		getData(0, 20)
 	}, [])
 
