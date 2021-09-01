@@ -12,7 +12,6 @@ const Login = () => {
 	})
 
 	const handleChange = ({ target: { name, value } }) => {
-		event.preventDefault()
 		setDataLogin((prev) => ({
 			...prev,
 			[name]: value,
