@@ -1,27 +1,25 @@
 /* eslint-disable @next/next/no-img-element */
 import Container from '../components/Container'
 import ListMoves from '../components/ListMoves'
-import { getPokemonInfoById, getPokemonEvolution } from '../services/pokeapi'
-import iterateEvolution from '../helpers/evolution'
 import CardItem from '../components/CardItem'
 import { useRouter } from 'next/dist/client/router'
-import { useEffect } from 'react'
 import CustomError from '../components/Error'
+import CustomButton from '../components/CustomButton'
+import { getPokemonEvolution, getPokemonInfoById } from '../services/pokeapi'
+import iterateEvolution from '../helpers/evolution'
 
-const Description = ({ name, image, moves, evolves, error = '' }) => {
+export default function Description({
+	name,
+	image,
+	moves,
+	evolves,
+	error = '',
+}) {
 	const router = useRouter()
 
 	const goBack = () => {
 		router.back()
 	}
-
-	useEffect(() => {
-		if (localStorage.getItem('token') === '') {
-			router.push({
-				pathname: '/login',
-			})
-		}
-	}, [])
 
 	if (error) {
 		return <CustomError message={error.message} />
@@ -31,11 +29,7 @@ const Description = ({ name, image, moves, evolves, error = '' }) => {
 		<Container>
 			<div className="d-flex justify-content-between bg-light align-items-center mb-4">
 				<h1 className="text-uppercase">{name}</h1>
-				<div className="">
-					<a className="btn btn-outline-secondary" onClick={goBack}>
-						Volver
-					</a>
-				</div>
+				<CustomButton text="Volver" action={goBack} />
 			</div>
 
 			<div className="col-md-3 col-xs-1 my-2">
@@ -64,30 +58,41 @@ const Description = ({ name, image, moves, evolves, error = '' }) => {
 	)
 }
 
-Description.getInitialProps = async ({ query }) => {
-	try {
-		const promisePokemon = getPokemonInfoById(query.id)
-		const promiseEvolutions = getPokemonEvolution(query.id)
+export async function getServerSideProps({ query }) {
+	const getItemDataServerSide = async (id) => {
+		try {
+			const promisePokemon = getPokemonInfoById(id)
+			const promiseEvolutions = getPokemonEvolution(id)
 
-		const [resultPromisePokemon, resultPromiseEvolutions] =
-			await Promise.allSettled([promisePokemon, promiseEvolutions])
+			const [resultPromisePokemon, resultPromiseEvolutions] =
+				await Promise.allSettled([promisePokemon, promiseEvolutions])
 
-		const pokemon = resultPromisePokemon.value
-		const evolutions = resultPromiseEvolutions.value
+			const pokemon = resultPromisePokemon.value
+			const evolutions = resultPromiseEvolutions.value
 
-		const evolves = !evolutions
-			? []
-			: iterateEvolution(evolutions.chain.evolves_to)
+			const evolves = !evolutions
+				? []
+				: iterateEvolution(evolutions.chain.evolves_to)
 
-		return {
-			name: pokemon.name,
-			image: pokemon.sprites.front_default,
-			moves: pokemon.moves,
-			evolves,
+			return {
+				name: pokemon.name,
+				image: pokemon.sprites.front_default,
+				moves: pokemon.moves,
+				evolves,
+			}
+		} catch (error) {
+			return {
+				name: pokemon.name,
+				image: pokemon.sprites.front_default,
+				moves: pokemon.moves,
+				evolves,
+			}
 		}
-	} catch (error) {
-		return { error }
+	}
+
+	const itemDataProps = await getItemDataServerSide(query.id)
+
+	return {
+		props: itemDataProps,
 	}
 }
-
-export default Description

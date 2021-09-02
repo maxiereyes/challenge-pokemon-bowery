@@ -4,23 +4,33 @@ import CardItem from '../components/CardItem'
 import Container from '../components/Container'
 import CustomError from '../components/Error'
 import Pagination from '../components/Pagination'
-import { getAllPokemon, getPokemonName } from '../services/pokeapi'
+import Search from '../components/Search'
+import { getAllPokemon } from '../services/pokeapi'
 
-export default function Home() {
+export default function Home({ pokemon, next, prev }) {
 	const router = useRouter()
 
 	const [data, setData] = useState({
-		pokemon: [],
-		next: '',
-		prev: '',
+		pokemon,
+		next,
+		prev,
 	})
 	const [error, setError] = useState('')
-	const [searchInput, setSearchInput] = useState('')
+	const [filterData, setFilterData] = useState({
+		pokemon,
+		next,
+		prev,
+	})
 
 	const getData = async (offset, limit) => {
 		try {
 			const data = await getAllPokemon(offset, limit)
 			setData({
+				pokemon: data.results,
+				next: data.next,
+				prev: data.previous,
+			})
+			setFilterData({
 				pokemon: data.results,
 				next: data.next,
 				prev: data.previous,
@@ -31,56 +41,27 @@ export default function Home() {
 	}
 
 	const getPrevOrNextData = async (url) => {
-		const queryParams = url.split('?')[1]
-		const params = new URLSearchParams(queryParams)
-		const offset = params.get('offset')
-		const limit = params.get('limit')
-		await getData(offset, limit)
+		if (url) {
+			const queryParams = url.split('?')[1]
+			const params = new URLSearchParams(queryParams)
+			const offset = params.get('offset')
+			const limit = params.get('limit')
+			await getData(offset, limit)
+		}
 	}
 
 	const handleChange = ({ target: { value } }) => {
-		setSearchInput(value)
-		if (!value.length) {
-			getData(0, 20)
-		}
-	}
-
-	const searchPokemonName = async (e) => {
-		e.preventDefault()
-		try {
-			const name = searchInput
-			const data = await getPokemonName(name)
-			if (!data.hasOwnProperty('results')) {
-				setData({
-					pokemon: [
-						{
-							name: data.name,
-							url: `https://pokeapi.co/api/v2/pokemon/${data.id}`,
-						},
-					],
-					next: '',
-					prev: '',
-				})
-			} else {
-				setData({
-					pokemon: data.results,
-					next: data.next,
-					prev: data.previous,
-				})
-			}
-		} catch (error) {
-			setError(error.message)
-		}
-	}
-
-	useEffect(() => {
-		if (localStorage.getItem('token') === '') {
-			router.push({
-				pathname: '/login',
+		if (value.length > 2) {
+			const newFilterData = data.pokemon.filter((item) =>
+				item.name.includes(value)
+			)
+			setFilterData({
+				pokemon: newFilterData,
 			})
+		} else {
+			setFilterData(data)
 		}
-		getData(0, 20)
-	}, [])
+	}
 
 	if (error) {
 		return <CustomError message={error} />
@@ -89,26 +70,12 @@ export default function Home() {
 	return (
 		<div>
 			<Container>
-				<div className="d-flex p-2 my-2 w-50 justify-content-center align-items-center">
-					<input
-						className="form-control me-2"
-						type="search"
-						placeholder="Search"
-						name="search"
-						onChange={handleChange}
-					/>
-					<button
-						className={`btn btn-outline-secondary`}
-						onClick={searchPokemonName}
-					>
-						Search
-					</button>
-				</div>
-				{!data.pokemon.length ? (
+				<Search action={handleChange} />
+				{!filterData.pokemon.length ? (
 					<h1>Not found data</h1>
 				) : (
 					<div className="d-flex flex-wrap justify-content-evenly">
-						{data.pokemon.map((item, index) => (
+						{filterData.pokemon.map((item, index) => (
 							<CardItem key={index} name={item.name} url={item.url} />
 						))}
 					</div>
@@ -121,4 +88,30 @@ export default function Home() {
 			</Container>
 		</div>
 	)
+}
+
+export async function getStaticProps() {
+	const getDataStaticProps = async () => {
+		try {
+			const data = await getAllPokemon(0, 20)
+
+			return {
+				pokemon: data.results,
+				next: data.next,
+				prev: data.previous,
+			}
+		} catch (error) {
+			return {
+				pokemon: [],
+				next: null,
+				prev: null,
+			}
+		}
+	}
+
+	const propsData = await getDataStaticProps()
+
+	return {
+		props: propsData,
+	}
 }
