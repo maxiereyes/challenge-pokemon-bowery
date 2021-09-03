@@ -1,23 +1,23 @@
 const iterateEvolution = (data) => {
-	let evalutionsData = []
+  let evalutionsData = [];
 
-	const iterateItem = (obj) => {
-		for (const prop in obj) {
-			if (typeof obj[prop] == 'object') {
-				if (prop == 'species') {
-					evalutionsData.push(obj[prop])
-				} else {
-					iterateItem(obj[prop])
-				}
-			}
-		}
-	}
+  const iterateItem = (obj) => {
+    for (const prop in obj) {
+      if (typeof obj[prop] == "object") {
+        if (prop == "species") {
+          evalutionsData.push(obj[prop]);
+        } else {
+          iterateItem(obj[prop]);
+        }
+      }
+    }
+  };
 
-	data.filter((item) => {
-		iterateItem(item)
-	})
+  data.filter((item) => {
+    iterateItem(item);
+  });
 
-	return evalutionsData
-}
+  return evalutionsData;
+};
 
-export default iterateEvolution
+export default iterateEvolution;
