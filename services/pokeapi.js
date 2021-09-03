@@ -1,4 +1,4 @@
-import { pokeApi } from '../api/axios.config'
+import { pokeApi } from '../config/axios.config'
 
 export const getAllPokemon = async (offset, limit) => {
 	const { data } = await pokeApi.get(`/pokemon?offset=${offset}&limit=${limit}`)

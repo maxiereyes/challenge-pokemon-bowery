@@ -7,6 +7,7 @@ import CustomError from '../components/Error'
 import CustomButton from '../components/CustomButton'
 import { getPokemonEvolution, getPokemonInfoById } from '../services/pokeapi'
 import iterateEvolution from '../helpers/evolution'
+import { getSession } from 'next-auth/client'
 
 export default function Description({
 	name,
@@ -58,7 +59,18 @@ export default function Description({
 	)
 }
 
-export async function getServerSideProps({ query }) {
+export async function getServerSideProps({ query, req }) {
+	const session = await getSession({ req })
+
+	if (!session) {
+		return {
+			redirect: {
+				destination: '/login',
+				permanent: false,
+			},
+		}
+	}
+
 	const getItemDataServerSide = async (id) => {
 		try {
 			const promisePokemon = getPokemonInfoById(id)
@@ -93,6 +105,8 @@ export async function getServerSideProps({ query }) {
 	const itemDataProps = await getItemDataServerSide(query.id)
 
 	return {
-		props: itemDataProps,
+		props: {
+			...itemDataProps,
+		},
 	}
 }

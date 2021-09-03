@@ -1,5 +1,6 @@
+import { getSession, useSession } from 'next-auth/client'
 import { useRouter } from 'next/dist/client/router'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import CardItem from '../components/CardItem'
 import Container from '../components/Container'
 import CustomError from '../components/Error'
@@ -9,7 +10,7 @@ import { getAllPokemon } from '../services/pokeapi'
 
 export default function Home({ pokemon, next, prev }) {
 	const router = useRouter()
-
+	const [session, loading] = useSession()
 	const [data, setData] = useState({
 		pokemon,
 		next,
@@ -21,6 +22,14 @@ export default function Home({ pokemon, next, prev }) {
 		next,
 		prev,
 	})
+
+	if (loading) return null
+
+	if (!loading && !session) {
+		router.push({
+			pathname: '/login',
+		})
+	}
 
 	const getData = async (offset, limit) => {
 		try {
@@ -69,28 +78,30 @@ export default function Home({ pokemon, next, prev }) {
 
 	return (
 		<div>
-			<Container>
-				<Search action={handleChange} />
-				{!filterData.pokemon.length ? (
-					<h1>Not found data</h1>
-				) : (
-					<div className="d-flex flex-wrap justify-content-evenly">
-						{filterData.pokemon.map((item, index) => (
-							<CardItem key={index} name={item.name} url={item.url} />
-						))}
-					</div>
-				)}
-				<Pagination
-					next={data.next}
-					prev={data.prev}
-					action={getPrevOrNextData}
-				/>
-			</Container>
+			{!loading && session && (
+				<Container>
+					<Search action={handleChange} />
+					{!filterData.pokemon.length ? (
+						<h1>Not found data</h1>
+					) : (
+						<div className="d-flex flex-wrap justify-content-evenly">
+							{filterData.pokemon.map((item, index) => (
+								<CardItem key={index} name={item.name} url={item.url} />
+							))}
+						</div>
+					)}
+					<Pagination
+						next={data.next}
+						prev={data.prev}
+						action={getPrevOrNextData}
+					/>
+				</Container>
+			)}
 		</div>
 	)
 }
 
-export async function getStaticProps() {
+export async function getStaticProps(context) {
 	const getDataStaticProps = async () => {
 		try {
 			const data = await getAllPokemon(0, 20)
@@ -112,6 +123,8 @@ export async function getStaticProps() {
 	const propsData = await getDataStaticProps()
 
 	return {
-		props: propsData,
+		props: {
+			...propsData,
+		},
 	}
 }

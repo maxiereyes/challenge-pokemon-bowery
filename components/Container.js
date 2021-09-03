@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import 'bootstrap/dist/css/bootstrap.css'
 
 const Container = ({ children }) => {
 	return (

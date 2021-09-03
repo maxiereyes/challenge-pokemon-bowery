@@ -1,8 +1,8 @@
 import { useRouter } from 'next/dist/client/router'
 import Container from '../components/Container'
 import { useState } from 'react'
-import { postLogin } from '../services/user'
 import CustomError from '../components/Error'
+import { signIn } from 'next-auth/client'
 
 const Login = () => {
 	const router = useRouter()
@@ -21,23 +21,17 @@ const Login = () => {
 		}))
 	}
 
-	const loginUser = async (event) => {
-		event.preventDefault()
-		try {
-			const { data } = await postLogin(dataLogin)
-
-			localStorage.setItem('token', data.token)
-
-			router.push({
-				pathname: '/',
-			})
-		} catch (error) {
-			setError(error.message)
-		}
-	}
-
 	if (error) {
 		return <CustomError message={error} />
+	}
+
+	const loginUser = async (e) => {
+		e.preventDefault()
+		await signIn('login_custom', {
+			email: dataLogin.email,
+			password: dataLogin.password,
+			callbackUrl: '/',
+		})
 	}
 
 	return (
