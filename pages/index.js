@@ -1,11 +1,11 @@
-import { getSession, useSession } from "next-auth/client";
+import { useSession } from "next-auth/client";
 import { useRouter } from "next/dist/client/router";
 import { useState } from "react";
-import CardItem from "../components/CardItem";
-import Container from "../components/Container";
-import CustomError from "../components/Error";
-import Pagination from "../components/Pagination";
-import Search from "../components/Search";
+import { CardItem } from "../components/CardItem";
+import { Container } from "../components/Container";
+import { CustomError } from "../components/Error";
+import { Pagination } from "../components/Pagination";
+import { Search } from "../components/Search";
 import { getAllPokemon } from "../services/pokeapi";
 
 export default function Home({ pokemon, next, prev }) {

@@ -1,4 +1,4 @@
-const Search = ({ action }) => {
+export const Search = ({ action }) => {
   return (
     <div className="d-flex p-2 my-2 w-50 justify-content-center align-items-center">
       <input
@@ -11,5 +11,3 @@ const Search = ({ action }) => {
     </div>
   );
 };
-
-export default Search;

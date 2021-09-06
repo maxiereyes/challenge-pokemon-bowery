@@ -1,4 +1,4 @@
-const Pagination = ({ next, prev, action }) => {
+export const Pagination = ({ next, prev, action }) => {
   return (
     <nav className="mt-4">
       <ul className="pagination justify-content-center">
@@ -18,5 +18,3 @@ const Pagination = ({ next, prev, action }) => {
     </nav>
   );
 };
-
-export default Pagination;

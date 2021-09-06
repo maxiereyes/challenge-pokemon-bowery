@@ -1,4 +1,4 @@
-import Container from "../components/Container";
+import { Container } from "../components/Container";
 import { useState } from "react";
 import { signIn } from "next-auth/client";
 import { useForm } from "react-hook-form";

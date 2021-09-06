@@ -1,6 +1,6 @@
 import styles from "./ListMoves.module.css";
 
-const ListMoves = ({ moves }) => {
+export const ListMoves = ({ moves }) => {
   return (
     <div className={`${styles.moves_custom} px-2`}>
       <ul
@@ -17,5 +17,3 @@ const ListMoves = ({ moves }) => {
     </div>
   );
 };
-
-export default ListMoves;

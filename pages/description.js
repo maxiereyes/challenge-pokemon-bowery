@@ -1,10 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
-import Container from "../components/Container";
-import ListMoves from "../components/ListMoves";
-import CardItem from "../components/CardItem";
+import { Container } from "../components/Container";
+import { ListMoves } from "../components/ListMoves";
+import { CardItem } from "../components/CardItem";
 import { useRouter } from "next/dist/client/router";
-import CustomError from "../components/Error";
-import CustomButton from "../components/CustomButton";
+import { CustomError } from "../components/Error";
+import { CustomButton } from "../components/CustomButton";
 import { getPokemonEvolution, getPokemonInfoById } from "../services/pokeapi";
 import iterateEvolution from "../helpers/evolution";
 import { getSession } from "next-auth/client";

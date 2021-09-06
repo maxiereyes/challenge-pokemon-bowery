@@ -1,7 +1,7 @@
 import { useRouter } from "next/dist/client/router";
 import styles from "./CardItem.module.css";
 
-const CardItem = (props) => {
+export const CardItem = (props) => {
   const router = useRouter();
 
   const goItemDescription = () => {
@@ -25,5 +25,3 @@ const CardItem = (props) => {
     </div>
   );
 };
-
-export default CardItem;

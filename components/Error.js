@@ -1,4 +1,4 @@
-const CustomError = ({ message }) => {
+export const CustomError = ({ message }) => {
   return (
     <div className="p-4">
       <div className="alert alert-danger" role="alert" id="liveAlert">
@@ -7,5 +7,3 @@ const CustomError = ({ message }) => {
     </div>
   );
 };
-
-export default CustomError;

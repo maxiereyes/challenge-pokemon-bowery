@@ -1,4 +1,4 @@
-const CustomButton = ({ text, action }) => {
+export const CustomButton = ({ text, action }) => {
   return (
     <div>
       <a className="btn btn-outline-secondary" onClick={action}>
@@ -7,5 +7,3 @@ const CustomButton = ({ text, action }) => {
     </div>
   );
 };
-
-export default CustomButton;
